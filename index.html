@@ -1,0 +1,1068 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gold & Orange Reward Wheel</title>
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1/dist/confetti.browser.min.js">
+    </script>
+    <style>
+        :root {
+            --orange: #ff8c00;
+            --deep-blue: #0a1a3a;
+            --royal-blue: #0d2247;
+            --gold: #f0c040;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: radial-gradient(ellipse at center, #0f2b5c 0%, #060e24 60%, #020810 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        @keyframes chaseGlow {
+            0%,
+            100% {
+                opacity: 0.25;
+                background: #b8d4f0;
+                box-shadow: 0 0 3px 1px rgba(180, 210, 255, 0.3);
+            }
+            18% {
+                opacity: 1;
+                background: #ffffff;
+                box-shadow: 0 0 8px 3px rgba(200, 230, 255, 0.9), 0 0 18px 6px rgba(140, 200, 255, 0.6), 0 0 30px 10px rgba(100, 170, 255, 0.35);
+            }
+            36% {
+                opacity: 0.5;
+                background: #c8dff8;
+                box-shadow: 0 0 5px 2px rgba(180, 210, 255, 0.5);
+            }
+            54% {
+                opacity: 0.2;
+                background: #a0c8e8;
+                box-shadow: 0 0 2px 1px rgba(150, 190, 230, 0.25);
+            }
+        }
+
+        @keyframes chaseGlowReverse {
+            0%,
+            100% {
+                opacity: 0.25;
+                background: #b8d4f0;
+                box-shadow: 0 0 3px 1px rgba(180, 210, 255, 0.3);
+            }
+            18% {
+                opacity: 1;
+                background: #ffffff;
+                box-shadow: 0 0 8px 3px rgba(200, 230, 255, 0.9), 0 0 18px 6px rgba(140, 200, 255, 0.6), 0 0 30px 10px rgba(100, 170, 255, 0.35);
+            }
+            36% {
+                opacity: 0.5;
+                background: #c8dff8;
+                box-shadow: 0 0 5px 2px rgba(180, 210, 255, 0.5);
+            }
+            54% {
+                opacity: 0.2;
+                background: #a0c8e8;
+                box-shadow: 0 0 2px 1px rgba(150, 190, 230, 0.25);
+            }
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) translateX(0) rotate(0deg) scale(0.6);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            85% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(40px) rotate(360deg) scale(1.1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes floatUpAlt {
+            0% {
+                transform: translateY(105vh) translateX(0) rotate(0deg) scale(0.5);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            85% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-10vh) translateX(-35px) rotate(-360deg) scale(1);
+                opacity: 0;
+            }
+        }
+
+        @keyframes coinShimmer {
+            0%,
+            100% {
+                filter: brightness(1) drop-shadow(0 0 2px rgba(255, 200, 60, 0.4));
+            }
+            50% {
+                filter: brightness(1.6) drop-shadow(0 0 8px rgba(255, 220, 80, 0.8));
+            }
+        }
+
+        @keyframes pulseGlow {
+            0%,
+            100% {
+                box-shadow: 0 0 15px rgba(255, 180, 30, 0.5), 0 0 40px rgba(255, 150, 0, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 30px rgba(255, 200, 50, 0.8), 0 0 60px rgba(255, 160, 20, 0.5), 0 0 80px rgba(255, 130, 0, 0.3);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+        }
+
+        @keyframes modalPopIn {
+            0% {
+                transform: scale(0.7);
+                opacity: 0;
+            }
+            70% {
+                transform: scale(1.04);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes shimmerBorder {
+            0%,
+            100% {
+                border-color: #ff8c00;
+                box-shadow: 0 0 10px rgba(255, 140, 0, 0.4), inset 0 0 10px rgba(255, 140, 0, 0.1);
+            }
+            25% {
+                border-color: #ffaa33;
+                box-shadow: 0 0 20px rgba(255, 160, 30, 0.6), inset 0 0 15px rgba(255, 160, 30, 0.2);
+            }
+            50% {
+                border-color: #ffc044;
+                box-shadow: 0 0 25px rgba(255, 180, 50, 0.7), inset 0 0 20px rgba(255, 180, 50, 0.25);
+            }
+            75% {
+                border-color: #ffaa33;
+                box-shadow: 0 0 20px rgba(255, 160, 30, 0.6), inset 0 0 15px rgba(255, 160, 30, 0.2);
+            }
+        }
+
+        .chase-dot {
+            position: absolute;
+            border-radius: 50%;
+            width: 7px;
+            height: 7px;
+            animation-duration: 2.4s;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+        }
+
+        .chase-dot-forward {
+            animation-name: chaseGlow;
+        }
+        .chase-dot-reverse {
+            animation-name: chaseGlowReverse;
+        }
+
+        .floating-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .floating-coin {
+            position: fixed;
+            pointer-events: none;
+            z-index: 0;
+            font-size: 22px;
+            animation: coinShimmer 3s ease-in-out infinite;
+        }
+
+        .spin-btn-3d {
+            background: radial-gradient(circle at 42% 35%, #ff5555 0%, #d42020 40%, #8b0000 100%);
+            border-radius: 50%;
+            border: 3px solid #6b0000;
+            color: #fff;
+            font-weight: 900;
+            font-size: 16px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            box-shadow:
+                0 7px 0 #5a0000,
+                0 10px 25px rgba(0, 0, 0, 0.5),
+                inset 0 3px 6px rgba(255, 255, 255, 0.25),
+                inset 0 -3px 6px rgba(0, 0, 0, 0.3);
+            transition: all 0.08s ease;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+            z-index: 20;
+        }
+
+        .spin-btn-3d:active {
+            transform: scale(0.93);
+            box-shadow:
+                0 2px 0 #5a0000,
+                0 4px 12px rgba(0, 0, 0, 0.5),
+                inset 0 3px 6px rgba(255, 255, 255, 0.2),
+                inset 0 -2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .spin-btn-3d:disabled {
+            cursor: not-allowed;
+            filter: brightness(0.7);
+            transform: scale(0.96);
+            box-shadow:
+                0 3px 0 #5a0000,
+                0 5px 15px rgba(0, 0, 0, 0.4),
+                inset 0 2px 4px rgba(255, 255, 255, 0.15);
+        }
+
+        .diamond-pointer {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #ffe680 0%, #ffb800 35%, #e68900 100%);
+            transform: rotate(45deg);
+            position: absolute;
+            top: -18px;
+            left: 50%;
+            margin-left: -14px;
+            box-shadow:
+                0 0 12px rgba(255, 180, 30, 0.7),
+                0 0 25px rgba(255, 140, 0, 0.4),
+                0 4px 8px rgba(0, 0, 0, 0.5);
+            z-index: 25;
+            border: 2px solid #ffd700;
+        }
+
+        .diamond-pointer::after {
+            content: '';
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            right: 4px;
+            bottom: 4px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 60%);
+            transform: rotate(0deg);
+            border-radius: 1px;
+        }
+
+        @keyframes processingPulse {
+            0%,
+            100% {
+                opacity: 0.7;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js">
+    </script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js">
+    </script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js">
+    </script>
+
+    <script type="text/babel">
+        const { useState, useRef, useEffect, useCallback, useMemo } = React;
+
+        // ─────────────────────────────────────
+        // CONSTANTS
+        // ─────────────────────────────────────
+        const SECTORS = [
+            { label: 'JACKPOT', color: '#ff8c00', textColor: '#000' },
+            { label: '100 FS', color: '#ffffff', textColor: '#000' },
+            { label: '100% BONUS', color: '#ff8c00', textColor: '#000' },
+            { label: '300 FS', color: '#ffffff', textColor: '#000' },
+            { label: 'JACKPOT', color: '#ff8c00', textColor: '#000' },
+            { label: '500 FS', color: '#ffffff', textColor: '#000' },
+            { label: '50% BONUS', color: '#ff8c00', textColor: '#000' },
+            { label: '125% BONUS', color: '#ffffff', textColor: '#000' },
+        ];
+
+        const SECTOR_ANGLE = 360 / SECTORS.length; // 45°
+        const JACKPOT_INDICES = [0, 4];
+        const WHEEL_SIZE = 310;
+        const OUTER_RIM_SIZE = 370;
+        const CHASE_DOT_COUNT = 40;
+        const CHASE_RADIUS = OUTER_RIM_SIZE / 2 - 9;
+
+        const CLAIM_URL = 'https://fuguway68.com/c514e464e';
+
+        const FAKE_WINNERS = [
+            '@user_alex99 won 300 FS',
+            '@lucky_star77 won 500 FS',
+            '@casino_king42 won JACKPOT',
+            '@bonus_hunter11 won 125% BONUS',
+            '@spin_master88 won 100 FS',
+            '@gold_winner23 won JACKPOT',
+            '@fs_collector55 won 300 FS',
+            '@jackpot_joy66 won 500 FS',
+            '@wheel_pro99 won 100% BONUS',
+            '@mega_win21 won JACKPOT',
+        ];
+
+        // ─────────────────────────────────────
+        // AUDIO ENGINE (Web Audio API)
+        // ─────────────────────────────────────
+        function createAudioEngine() {
+            let ctx = null;
+            const getCtx = () => {
+                if (!ctx) {
+                    ctx = new(window.AudioContext || window.webkitAudioContext)();
+                }
+                if (ctx.state === 'suspended') ctx.resume();
+                return ctx;
+            };
+
+            const playClick = () => {
+                try {
+                    const c = getCtx();
+                    const now = c.currentTime;
+                    const osc = c.createOscillator();
+                    const gain = c.createGain();
+                    const filter = c.createBiquadFilter();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(200, now + 0.04);
+                    filter.type = 'bandpass';
+                    filter.frequency.setValueAtTime(3000, now);
+                    filter.Q.setValueAtTime(2, now);
+                    gain.gain.setValueAtTime(0.08, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                    osc.connect(filter);
+                    filter.connect(gain);
+                    gain.connect(c.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.05);
+                } catch (e) { /* silent */ }
+            };
+
+            const playBubblePop = () => {
+                try {
+                    const c = getCtx();
+                    const now = c.currentTime;
+                    const osc = c.createOscillator();
+                    const gain = c.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(600, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+                    gain.gain.setValueAtTime(0.12, now);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+                    osc.connect(gain);
+                    gain.connect(c.destination);
+                    osc.start(now);
+                    osc.stop(now + 0.1);
+                } catch (e) { /* silent */ }
+            };
+
+            const playShimmer = (duration = 1.5) => {
+                try {
+                    const c = getCtx();
+                    const now = c.currentTime;
+                    const osc = c.createOscillator();
+                    const gain = c.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(400, now);
+                    osc.frequency.exponentialRampToValueAtTime(1800, now + duration);
+                    gain.gain.setValueAtTime(0.06, now);
+                    gain.gain.setValueAtTime(0.09, now + duration * 0.4);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+                    osc.connect(gain);
+                    gain.connect(c.destination);
+                    osc.start(now);
+                    osc.stop(now + duration + 0.05);
+                } catch (e) { /* silent */ }
+            };
+
+            const playFanfare = () => {
+                try {
+                    const c = getCtx();
+                    const now = c.currentTime;
+                    const notes = [523, 659, 784, 1047];
+                    notes.forEach((freq, i) => {
+                        const osc = c.createOscillator();
+                        const gain = c.createGain();
+                        osc.type = 'triangle';
+                        const t = now + i * 0.12;
+                        osc.frequency.setValueAtTime(freq, t);
+                        gain.gain.setValueAtTime(0.1, t);
+                        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+                        osc.connect(gain);
+                        gain.connect(c.destination);
+                        osc.start(t);
+                        osc.stop(t + 0.26);
+                    });
+                } catch (e) { /* silent */ }
+            };
+
+            return { playClick, playBubblePop, playShimmer, playFanfare, getCtx };
+        }
+
+        // ─────────────────────────────────────
+        // TELEGRAM SDK HELPER
+        // ─────────────────────────────────────
+        function useTelegramHaptic() {
+            const webAppRef = useRef(null);
+            const availableRef = useRef(false);
+
+            useEffect(() => {
+                try {
+                    if (window.Telegram && window.Telegram.WebApp) {
+                        webAppRef.current = window.Telegram.WebApp;
+                        availableRef.current = true;
+                        webAppRef.current.ready();
+                        webAppRef.current.expand();
+                    }
+                } catch (e) {
+                    availableRef.current = false;
+                }
+            }, []);
+
+            const impactMedium = useCallback(() => {
+                try {
+                    if (availableRef.current && webAppRef.current?.HapticFeedback) {
+                        webAppRef.current.HapticFeedback.impactOccurred('medium');
+                    } else if (navigator.vibrate) {
+                        navigator.vibrate(15);
+                    }
+                } catch (e) { /* silent */ }
+            }, []);
+
+            const notificationSuccess = useCallback(() => {
+                try {
+                    if (availableRef.current && webAppRef.current?.HapticFeedback) {
+                        webAppRef.current.HapticFeedback.notificationOccurred('success');
+                    } else if (navigator.vibrate) {
+                        navigator.vibrate([30, 40, 30, 40, 60]);
+                    }
+                } catch (e) { /* silent */ }
+            }, []);
+
+            const openLink = useCallback((url) => {
+                try {
+                    if (availableRef.current && webAppRef.current?.openLink) {
+                        webAppRef.current.openLink(url);
+                    } else {
+                        window.open(url, '_blank');
+                    }
+                } catch (e) {
+                    window.open(url, '_blank');
+                }
+            }, []);
+
+            return { impactMedium, notificationSuccess, openLink, isAvailable: availableRef.current };
+        }
+
+        // ─────────────────────────────────────
+        // DRAW WHEEL ON CANVAS (bold labels)
+        // ─────────────────────────────────────
+        function drawWheel(canvas, sectors, sectorAngle) {
+            if (!canvas) return;
+            const size = WHEEL_SIZE;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = size * dpr;
+            canvas.height = size * dpr;
+            canvas.style.width = size + 'px';
+            canvas.style.height = size + 'px';
+            const ctx = canvas.getContext('2d');
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+            const cx = size / 2;
+            const cy = size / 2;
+            const radius = size / 2 - 4;
+
+            sectors.forEach((sector, i) => {
+                const startAngle = (i * sectorAngle - 90 - sectorAngle / 2) * (Math.PI / 180);
+                const endAngle = ((i + 1) * sectorAngle - 90 - sectorAngle / 2) * (Math.PI / 180);
+
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, radius, startAngle, endAngle);
+                ctx.closePath();
+                ctx.fillStyle = sector.color;
+                ctx.fill();
+
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = '#d4a030';
+                ctx.stroke();
+
+                const grad = ctx.createRadialGradient(cx, cy, radius * 0.45, cx, cy, radius);
+                grad.addColorStop(0, 'rgba(0,0,0,0)');
+                grad.addColorStop(1, 'rgba(0,0,0,0.18)');
+                ctx.fillStyle = grad;
+                ctx.fill();
+            });
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = '#c8960c';
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.34, 0, Math.PI * 2);
+            ctx.strokeStyle = '#c8960c';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            ctx.fillStyle = '#1a0a00';
+            ctx.fill();
+
+            // Bold curved labels
+            sectors.forEach((sector, i) => {
+                const midAngleDeg = i * sectorAngle;
+                const midAngleRad = (midAngleDeg - 90) * (Math.PI / 180);
+                const textRadius = radius * 0.72;
+                const label = sector.label;
+                const chars = label.split('');
+                const totalArcSpan = Math.min(sectorAngle * 0.7, sectorAngle - 8);
+                const charArcSpan = chars.length > 1 ? totalArcSpan / (chars.length - 1) : 0;
+                const startArcDeg = midAngleDeg - totalArcSpan / 2;
+
+                ctx.save();
+                ctx.fillStyle = sector.textColor;
+                ctx.font = '900 15px "Segoe UI", system-ui, sans-serif';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+
+                chars.forEach((char, ci) => {
+                    const charAngleDeg = startArcDeg + ci * charArcSpan;
+                    const charAngleRad = (charAngleDeg - 90) * (Math.PI / 180);
+                    const charX = cx + Math.cos(charAngleRad) * textRadius;
+                    const charY = cy + Math.sin(charAngleRad) * textRadius;
+
+                    ctx.save();
+                    ctx.translate(charX, charY);
+                    ctx.rotate(charAngleRad + Math.PI / 2);
+                    ctx.fillText(char, 0, 0);
+                    ctx.restore();
+                });
+
+                ctx.restore();
+            });
+
+            const centerGrad = ctx.createRadialGradient(cx, cy, radius * 0.1, cx, cy, radius * 0.33);
+            centerGrad.addColorStop(0, '#3a1a00');
+            centerGrad.addColorStop(1, '#1a0800');
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius * 0.33, 0, Math.PI * 2);
+            ctx.fillStyle = centerGrad;
+            ctx.fill();
+            ctx.strokeStyle = '#c8960c';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+        }
+
+        // ─────────────────────────────────────
+        // EASING FUNCTIONS
+        // ─────────────────────────────────────
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+        const easeOutQuint = (t) => 1 - Math.pow(1 - t, 5);
+        const easeOutExpo = (t) => t >= 1 ? 1 : 1 - Math.pow(2, -10 * t);
+
+        // ─────────────────────────────────────
+        // MAIN APP COMPONENT
+        // ─────────────────────────────────────
+        function App() {
+            const [rotation, setRotation] = useState(0);
+            const [isSpinning, setIsSpinning] = useState(false);
+            const [spinCount, setSpinCount] = useState(0);
+            const [resultLabel, setResultLabel] = useState(null);
+            const [showProcessing, setShowProcessing] = useState(false);
+            const [showClaimModal, setShowClaimModal] = useState(false);
+            const [visibleFeedItem, setVisibleFeedItem] = useState(null);
+            const [feedKey, setFeedKey] = useState(0);
+            const [collectedPrizes, setCollectedPrizes] = useState([]);
+
+            const canvasRef = useRef(null);
+            const audioRef = useRef(null);
+            const spinAnimRef = useRef(null);
+            const clickTrackerRef = useRef(0);
+            const isMountedRef = useRef(true);
+
+            const haptic = useTelegramHaptic();
+
+            useEffect(() => {
+                audioRef.current = createAudioEngine();
+                return () => {
+                    isMountedRef.current = false;
+                    if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current);
+                };
+            }, []);
+
+            useEffect(() => {
+                drawWheel(canvasRef.current, SECTORS, SECTOR_ANGLE);
+            }, []);
+
+            // Live winner feed rotation
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    const nextWinner = FAKE_WINNERS[Math.floor(Math.random() * FAKE_WINNERS.length)];
+                    setVisibleFeedItem(nextWinner);
+                    setFeedKey(k => k + 1);
+                }, 2800);
+                setVisibleFeedItem(FAKE_WINNERS[0]);
+                setFeedKey(1);
+                return () => clearInterval(interval);
+            }, []);
+
+            useEffect(() => {
+                if (visibleFeedItem) {
+                    const timeout = setTimeout(() => {
+                        setVisibleFeedItem(null);
+                    }, 2600);
+                    return () => clearTimeout(timeout);
+                }
+            }, [feedKey, visibleFeedItem]);
+
+            // Determine target sector index based on spin number
+            const getTargetSector = useCallback((spinNum) => {
+                if (spinNum === 0) {
+                    return Math.random() < 0.5 ? 1 : 6; // 100 FS or 50% BONUS
+                } else if (spinNum === 1) {
+                    return Math.random() < 0.5 ? 1 : 6; // the other
+                } else if (spinNum === 2) {
+                    const jackpotIdx = JACKPOT_INDICES[Math.floor(Math.random() * JACKPOT_INDICES.length)];
+                    return (jackpotIdx + 1) % SECTORS.length; // sector just past JACKPOT (near miss)
+                } else if (spinNum === 3) {
+                    return JACKPOT_INDICES[Math.floor(Math.random() * JACKPOT_INDICES.length)]; // guaranteed JACKPOT
+                } else {
+                    return Math.floor(Math.random() * SECTORS.length);
+                }
+            }, []);
+
+            // Spin the wheel
+            const spin = useCallback(() => {
+                if (isSpinning) return;
+
+                setIsSpinning(true);
+                setResultLabel(null);
+                setShowProcessing(false);
+                setShowClaimModal(false);
+                haptic.impactMedium();
+                audioRef.current?.playBubblePop();
+
+                const currentSpinNum = spinCount;
+                const targetSectorIdx = getTargetSector(currentSpinNum);
+                const isNearMiss = currentSpinNum === 2;
+
+                // Target angle: pointer is at 12 o'clock; to land on sector i, wheel must rotate -(i * SECTOR_ANGLE)
+                // (rotating clockwise moves sectors counter-clockwise past the pointer)
+                let targetAngle;
+                if (isNearMiss) {
+                    const nearMissOffsetDeg = Math.random() * 5 + 3; // 3-8° inside neighbor, near JACKPOT edge
+                    targetAngle = -(targetSectorIdx * SECTOR_ANGLE) + nearMissOffsetDeg;
+                } else {
+                    targetAngle = -(targetSectorIdx * SECTOR_ANGLE); // center of target sector
+                }
+
+                const currentRotation = rotation;
+                let rawTarget = targetAngle;
+                // Ensure multiple full rotations forward
+                const minFullRotations = 6;
+                while (rawTarget <= currentRotation + minFullRotations * 360) {
+                    rawTarget += 360;
+                }
+                const targetRotation = rawTarget;
+                const totalSpinDegrees = targetRotation - currentRotation;
+                const duration = isNearMiss ? 5500 + Math.random() * 800 : 4200 + Math.random() * 600;
+                const startRotation = currentRotation;
+                const startTime = performance.now();
+                clickTrackerRef.current = 0;
+
+                if (isNearMiss) {
+                    audioRef.current?.playShimmer(2.5);
+                }
+
+                const animate = (now) => {
+                    if (!isMountedRef.current) return;
+                    const elapsed = now - startTime;
+                    const rawProgress = Math.min(elapsed / duration, 1);
+
+                    let easedProgress;
+                    if (isNearMiss) {
+                        easedProgress = rawProgress < 0.85 ?
+                            easeOutCubic(rawProgress / 0.85) * 0.88 :
+                            0.88 + easeOutExpo((rawProgress - 0.85) / 0.15) * 0.12;
+                    } else if (currentSpinNum === 3) {
+                        easedProgress = easeOutQuint(rawProgress);
+                    } else {
+                        easedProgress = easeOutCubic(rawProgress);
+                    }
+
+                    const currentAngle = startRotation + totalSpinDegrees * easedProgress;
+                    setRotation(currentAngle);
+
+                    const totalDegreesTraveled = currentAngle - startRotation;
+                    const clicksShouldHave = Math.floor(totalDegreesTraveled / SECTOR_ANGLE);
+                    if (clicksShouldHave > clickTrackerRef.current) {
+                        clickTrackerRef.current = clicksShouldHave;
+                        audioRef.current?.playClick();
+                        if (clicksShouldHave % 4 === 0) {
+                            haptic.impactMedium();
+                        }
+                    }
+
+                    if (rawProgress < 1) {
+                        spinAnimRef.current = requestAnimationFrame(animate);
+                    } else {
+                        // Spin complete – use the pre-determined target sector (avoids stale closure bug)
+                        const landedLabel = SECTORS[targetSectorIdx].label;
+                        setResultLabel(landedLabel);
+                        setCollectedPrizes(prev => [...prev, landedLabel]);
+                        setIsSpinning(false);
+                        setSpinCount(prev => prev + 1);
+                        haptic.notificationSuccess();
+
+                        const newSpinCount = currentSpinNum + 1;
+
+                        if (landedLabel === 'JACKPOT' && newSpinCount >= 4) {
+                            audioRef.current?.playFanfare();
+                            if (typeof confetti !== 'undefined') {
+                                const duration2 = 3000;
+                                const end = Date.now() + duration2;
+                                const colors = ['#ff8c00', '#FFD700', '#FFA500', '#ffcc00', '#fff', '#ffb800'];
+                                const frame = () => {
+                                    confetti({
+                                        particleCount: 3,
+                                        angle: 60,
+                                        spread: 55,
+                                        origin: { x: 0, y: 0.7 },
+                                        colors: colors,
+                                    });
+                                    confetti({
+                                        particleCount: 3,
+                                        angle: 120,
+                                        spread: 55,
+                                        origin: { x: 1, y: 0.7 },
+                                        colors: colors,
+                                    });
+                                    confetti({
+                                        particleCount: 2,
+                                        angle: 90,
+                                        spread: 100,
+                                        origin: { x: 0.5, y: 0.55 },
+                                        colors: colors,
+                                        startVelocity: 35,
+                                    });
+                                    if (Date.now() < end) {
+                                        requestAnimationFrame(frame);
+                                    }
+                                };
+                                frame();
+                                setTimeout(() => {
+                                    confetti({
+                                        particleCount: 200,
+                                        spread: 100,
+                                        origin: { y: 0.5, x: 0.5 },
+                                        colors: colors,
+                                        startVelocity: 40,
+                                        decay: 0.92,
+                                    });
+                                }, 300);
+                            }
+                            setShowProcessing(true);
+                            setTimeout(() => {
+                                if (isMountedRef.current) {
+                                    setShowProcessing(false);
+                                    setShowClaimModal(true);
+                                }
+                            }, 2000);
+                        }
+                    }
+                };
+
+                spinAnimRef.current = requestAnimationFrame(animate);
+            }, [isSpinning, spinCount, rotation, haptic, getTargetSector]);
+
+            useEffect(() => {
+                return () => {
+                    if (spinAnimRef.current) cancelAnimationFrame(spinAnimRef.current);
+                };
+            }, []);
+
+            const chaseDots = useMemo(() => {
+                const dots = [];
+                for (let i = 0; i < CHASE_DOT_COUNT; i++) {
+                    const angleDeg = (i / CHASE_DOT_COUNT) * 360;
+                    const angleRad = (angleDeg - 90) * (Math.PI / 180);
+                    const x = Math.cos(angleRad) * CHASE_RADIUS;
+                    const y = Math.sin(angleRad) * CHASE_RADIUS;
+                    const delay = (i / CHASE_DOT_COUNT) * 2.4;
+                    const isForward = i < CHASE_DOT_COUNT / 2;
+                    dots.push({
+                        id: i,
+                        x,
+                        y,
+                        delay,
+                        className: `chase-dot ${isForward ? 'chase-dot-forward' : 'chase-dot-reverse'}`,
+                    });
+                }
+                return dots;
+            }, []);
+
+            const floatingParticles = useMemo(() => {
+                const particles = [];
+                for (let i = 0; i < 25; i++) {
+                    particles.push({
+                        id: i,
+                        left: Math.random() * 100 + '%',
+                        size: Math.random() * 4 + 2,
+                        duration: Math.random() * 12 + 8,
+                        delay: Math.random() * 10,
+                        opacity: Math.random() * 0.5 + 0.2,
+                        isCoin: i < 10,
+                    });
+                }
+                return particles;
+            }, []);
+
+            const isJackpotResult = resultLabel === 'JACKPOT';
+            const canSpin = !isSpinning && !showProcessing && !showClaimModal;
+
+            return (
+                <div className="relative w-full min-h-screen flex flex-col items-center justify-center"
+                    style={{ background: 'radial-gradient(ellipse at center, #0f2b5c 0%, #060e24 60%, #020810 100%)' }}>
+
+                    {floatingParticles.map((p) => (
+                        p.isCoin ? (
+                            <div key={p.id}
+                                className="floating-coin"
+                                style={{
+                                    left: p.left,
+                                    animation: `${Math.random() > 0.5 ? 'floatUp' : 'floatUpAlt'} ${p.duration}s ${p.delay}s infinite`,
+                                    fontSize: Math.random() * 16 + 14 + 'px',
+                                    opacity: p.opacity,
+                                }}>🪙</div>
+                        ) : (
+                            <div key={p.id}
+                                className="floating-particle rounded-full"
+                                style={{
+                                    left: p.left,
+                                    width: p.size + 'px',
+                                    height: p.size + 'px',
+                                    background: `rgba(255,255,255,${p.opacity})`,
+                                    boxShadow: `0 0 ${p.size*3}px rgba(180,210,255,${p.opacity})`,
+                                    animation: `floatUp ${p.duration}s ${p.delay}s infinite`,
+                                }}></div>
+                        )
+                    ))}
+
+                    {/* Your Winnings (top left) */}
+                    <div className="fixed top-4 left-4 z-40">
+                        <div className="bg-black/60 backdrop-blur-md rounded-xl px-4 py-3 border border-amber-500/30 text-white shadow-lg max-w-[200px]">
+                            <p className="text-amber-400 text-xs font-bold uppercase mb-1">Your Winnings</p>
+                            <div className="flex flex-wrap gap-1 max-h-24 overflow-y-auto">
+                                {collectedPrizes.length === 0 ? (
+                                    <span className="text-gray-400 text-xs">Spin to win!</span>
+                                ) : (
+                                    collectedPrizes.map((prize, idx) => (
+                                        <span key={idx} className="bg-amber-600/30 text-amber-200 text-xs px-2 py-0.5 rounded-full border border-amber-500/40">{prize}</span>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Live Winner Feed (top right) */}
+                    {visibleFeedItem && (
+                        <div key={feedKey} className="fixed top-4 right-4 z-40 pointer-events-none"
+                            style={{ animation: 'slideInRight 0.5s ease-out' }}>
+                            <div className="bg-black/70 backdrop-blur-sm rounded-xl px-4 py-2.5 border border-amber-500/40 text-white text-sm font-semibold shadow-lg"
+                                style={{ boxShadow: '0 0 20px rgba(255,180,30,0.3), 0 4px 15px rgba(0,0,0,0.5)' }}>
+                                <span className="text-amber-400">🏆</span> {visibleFeedItem}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Main Wheel Container */}
+                    <div className="relative flex items-center justify-center"
+                        style={{ width: OUTER_RIM_SIZE + 'px', height: OUTER_RIM_SIZE + 'px' }}
+                        ref={null}>
+
+                        {/* Outer Rim with Chasing Lights */}
+                        <div className="absolute rounded-full"
+                            style={{
+                                width: OUTER_RIM_SIZE + 'px',
+                                height: OUTER_RIM_SIZE + 'px',
+                                background: 'linear-gradient(180deg, #0c1d42 0%, #132e5e 30%, #0f2548 60%, #081830 100%)',
+                                border: '6px solid #1a3a6a',
+                                boxShadow: '0 0 40px rgba(20,50,100,0.5), 0 0 80px rgba(10,30,70,0.3), inset 0 0 30px rgba(0,0,0,0.4)',
+                                zIndex: 0,
+                            }}>
+                            <div className="absolute rounded-full"
+                                style={{
+                                    top: '12px', left: '12px', right: '12px', bottom: '12px',
+                                    border: '3px solid #1e4580',
+                                    borderRadius: '50%',
+                                    boxShadow: 'inset 0 0 15px rgba(30,60,120,0.5)',
+                                }}></div>
+                            {chaseDots.map((dot) => (
+                                <div key={dot.id}
+                                    className={dot.className}
+                                    style={{
+                                        left: `calc(50% + ${dot.x}px - 3.5px)`,
+                                        top: `calc(50% + ${dot.y}px - 3.5px)`,
+                                        animationDelay: dot.delay + 's',
+                                    }}></div>
+                            ))}
+                        </div>
+
+                        {/* Rotating Wheel Canvas */}
+                        <canvas ref={canvasRef}
+                            className="absolute rounded-full"
+                            style={{
+                                width: WHEEL_SIZE + 'px',
+                                height: WHEEL_SIZE + 'px',
+                                transform: `rotate(${rotation}deg)`,
+                                transition: isSpinning ? 'none' : 'transform 0.3s ease-out',
+                                zIndex: 5,
+                                borderRadius: '50%',
+                            }}
+                            onClick={canSpin ? spin : undefined}
+                        />
+
+                        {/* Center SPIN Button */}
+                        <button onClick={canSpin ? spin : undefined}
+                            disabled={!canSpin}
+                            className="spin-btn-3d absolute flex items-center justify-center"
+                            style={{ width: '72px', height: '72px', zIndex: 20 }}
+                            title="SPIN">
+                            {isSpinning ? '...' : 'SPIN'}
+                        </button>
+
+                        {/* Diamond Pointer at 12 o'clock */}
+                        <div className="diamond-pointer"></div>
+                    </div>
+
+                    {/* Result Display */}
+                    {resultLabel && !isSpinning && !showProcessing && !showClaimModal && (
+                        <div className="mt-5 text-center" style={{ animation: 'modalPopIn 0.5s ease-out' }}>
+                            <p className="text-white text-xl font-bold tracking-wide"
+                                style={{ textShadow: '0 0 15px rgba(255,200,60,0.7)' }}>
+                                Result: <span className={isJackpotResult ? 'text-amber-300' : 'text-white'}>{resultLabel}</span>
+                            </p>
+                            {isJackpotResult && spinCount < 4 && (
+                                <p className="text-amber-400 text-sm mt-1">🎉 Congratulations!</p>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Processing Overlay */}
+                    {showProcessing && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                            <div className="text-center" style={{ animation: 'processingPulse 1.2s ease-in-out infinite' }}>
+                                <div className="w-20 h-20 mx-auto mb-4 rounded-full border-4 border-amber-400 border-t-transparent animate-spin"
+                                    style={{ borderTopColor: 'transparent' }}></div>
+                                <p className="text-white text-2xl font-bold mb-2"
+                                    style={{ textShadow: '0 0 20px rgba(255,200,50,0.6)' }}>Processing...</p>
+                                <p className="text-amber-300/80 text-sm">Verifying your prize...</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Claim Modal */}
+                    {showClaimModal && (
+                        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+                            <div className="relative bg-gradient-to-b from-[#1a1a2e] to-[#0d0d1a] rounded-3xl p-6 sm:p-8 max-w-sm w-full text-center border-2 border-amber-500/60"
+                                style={{
+                                    animation: 'modalPopIn 0.5s ease-out',
+                                    boxShadow: '0 0 50px rgba(255,160,20,0.4), 0 0 100px rgba(255,120,0,0.2), 0 20px 50px rgba(0,0,0,0.6)',
+                                }}>
+                                <div className="absolute inset-0 rounded-3xl pointer-events-none"
+                                    style={{ animation: 'shimmerBorder 2s ease-in-out infinite', border: '3px solid #ff8c00' }}></div>
+                                <div className="text-6xl mb-3 relative z-10">🏆</div>
+                                <h2 className="text-3xl font-black text-amber-300 mb-2 relative z-10"
+                                    style={{ textShadow: '0 0 25px rgba(255,180,30,0.7)' }}>CLAIM YOUR PRIZE!</h2>
+                                <p className="text-white/90 text-base mb-1 relative z-10 font-semibold">
+                                    Your <span className="text-amber-400">$500 bonus + 500 FS</span> is reserved.
+                                </p>
+                                <p className="text-gray-300 text-sm mb-6 relative z-10">
+                                    Complete verification to unlock your reward.
+                                </p>
+                                <button onClick={() => {
+                                        haptic.notificationSuccess();
+                                        haptic.openLink(CLAIM_URL);
+                                    }}
+                                    className="relative z-10 w-full py-4 rounded-2xl text-xl font-black text-white uppercase tracking-wider cursor-pointer"
+                                    style={{
+                                        background: 'linear-gradient(180deg, #ffb800 0%, #ff8c00 40%, #d47000 100%)',
+                                        border: '2px solid #ffcc44',
+                                        boxShadow: '0 0 30px rgba(255,180,30,0.6), 0 0 60px rgba(255,140,0,0.35), 0 6px 0 #8b4500, 0 8px 20px rgba(0,0,0,0.5)',
+                                        animation: 'pulseGlow 2s ease-in-out infinite',
+                                    }}>
+                                    VERIFY & CLAIM <span className="ml-1">🔒</span>
+                                </button>
+                                <p className="text-gray-400 text-xs mt-3 relative z-10">Secure verification • Instant credit</p>
+                            </div>
+                        </div>
+                    )}
+
+                    {!showClaimModal && !showProcessing && (
+                        <div className="mt-4 text-center">
+                            <p className="text-gray-400 text-xs">
+                                Spin #{spinCount + 1} {spinCount < 3 ? `• ${4 - spinCount} spins until guaranteed JACKPOT` : ''}
+                            </p>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>
